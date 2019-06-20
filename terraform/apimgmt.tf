@@ -42,6 +42,14 @@ resource "azurerm_api_management_api_policy" "example" {
   <policies>
     <inbound>
       <base />
+      <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized" require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true" clock-skew="0">
+        <openid-config url="https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}/.well-known/openid-configuration" />
+        <required-claims>
+          <claim name="aud">
+            <value>${azuread_application.example-api.application_id}</value>
+          </claim>
+        </required-claims>
+      </validate-jwt>
     </inbound>
     <backend>
       <base />
